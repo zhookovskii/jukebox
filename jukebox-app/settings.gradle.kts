@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "jukebox-app"
 include(":app")
+include(":song-list")
