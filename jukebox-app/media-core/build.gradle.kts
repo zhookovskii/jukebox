@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.zhukovskii.song_list"
+    namespace = "com.zhukovskii.media_core"
     compileSdk = 34
 
     defaultConfig {
@@ -39,23 +39,19 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
 
-    // Fragment
-    implementation(libs.androidx.fragment)
-    implementation(libs.androidx.fragment.ktx)
-
-    // Hilt
+    // Dagger
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
 
-    // Retrofit
-    implementation(libs.retrofit)
+    // Media
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
+    implementation(libs.androidx.media3.session)
 
-    // Lifecycle
-    implementation(libs.lifecycle.viewmodel.ktx)
+    // Glide
+    implementation(libs.glide)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    implementation(project(":media-core"))
 }

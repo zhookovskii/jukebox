@@ -1,6 +1,8 @@
 package com.zhukovskii.song_list.presentation
 
+import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Spinner
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,8 +15,11 @@ import com.zhukovskii.song_list.presentation.recycler.SongListAdapter
 
 class SongListView(
     view: View,
+    onLoadCover: (trackId: Long, imageView: ImageView) -> Unit,
     onItemClick: (Song) -> Unit,
+    onProgressChanged: (Int) -> Unit,
     onRetryClick: () -> Unit,
+    onProgressUpdateCallbackSet: ((Int) -> Unit) -> Unit,
 ) {
 
     private val listView: RecyclerView = view.findViewById(R.id.list)
@@ -23,8 +28,10 @@ class SongListView(
     private val retryButtonView: MaterialButton = view.findViewById(R.id.retry_button)
 
     private val adapter = SongListAdapter(
-        data = emptyList(),
+        onLoadCover = onLoadCover,
         onClick = onItemClick,
+        onProgressChanged = onProgressChanged,
+        onProgressUpdateCallbackSet = onProgressUpdateCallbackSet,
     )
 
     init {
@@ -35,6 +42,7 @@ class SongListView(
     }
 
     fun render(state: SongListState) {
+        Log.d("SongListView", "New state: $state")
         when (state) {
             is SongListState.Content -> {
                 loadingView.hide()

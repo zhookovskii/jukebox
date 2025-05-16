@@ -14,9 +14,9 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
+        android:textSize="14sp"
         android:textStyle="normal"
-        android:textColor="?colorPrimary"
+        android:textColor="?colorPrimaryVariant"
         android:gravity="center"
         android:text="Не получилось загрузить данные. Попробуйте еще раз"/>
 

@@ -21,6 +21,7 @@ object SongListModule {
         retrofit.create(SongListApi::class.java)
 
     @Module
+    @InstallIn(SingletonComponent::class)
     interface Declarations {
 
         @Binds

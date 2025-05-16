@@ -3,7 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"sync"
 )
@@ -17,12 +19,14 @@ var (
 type SongRequest struct {
 	Name string `json:"name"`
 	Artist string `json:"artist"`
+	Duration int `json:"duration"`
 }
 
 type SongResponse struct {
 	Id int `json:"id"`
 	Name string `json:"name"`
 	Artist string `json:"artist"`
+	Duration int `json:"duration"`
 }
 
 func main() {
@@ -31,9 +35,11 @@ func main() {
 	mux.HandleFunc("GET /songs", getSongs)
 	mux.HandleFunc("POST /songs", createSong)
 	mux.HandleFunc("DELETE /songs/{id}", deleteSong)
+	mux.HandleFunc("GET /songs/{id}/play", playSong)
+	mux.HandleFunc("GET /songs/{id}/cover", getCover)
 
 	fmt.Println("Server listening on port 8080")
-	http.ListenAndServe(":8080", mux)
+	http.ListenAndServe("0.0.0.0:8080", mux)
 }
 
 func getSong(
@@ -85,6 +91,7 @@ func getSongs(
 			Id:     id,
 			Name:   songReq.Name,
 			Artist: songReq.Artist,
+			Duration: songReq.Duration,
 		})
 	}
 	cacheMutex.RUnlock()
@@ -151,4 +158,41 @@ func deleteSong(
 	cacheMutex.Unlock()
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func playSong(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	audioPath := fmt.Sprintf("tracks/%d.mp3", id)
+
+	http.ServeFile(w, r, audioPath)
+}
+
+func getCover(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, "Cover not found", http.StatusNotFound)
+		return
+	}
+
+	imagePath := fmt.Sprintf("covers/%d.jpg", id)
+
+	file, err := os.Open(imagePath)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer file.Close()
+
+	w.Header().Set("Content-Type", "image/jpeg")
+
+	_, err = io.Copy(w, file)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }

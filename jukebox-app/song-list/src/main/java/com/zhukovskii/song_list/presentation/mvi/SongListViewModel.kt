@@ -43,7 +43,7 @@ class SongListViewModel @Inject constructor(
     }
 
     private suspend fun handleIntent(intent: SongListIntent) {
-        actor.process(intent)
+        actor.process(intent, _stateFlow.value)
             .onEach(::handleInternalAction)
             .launchIn(viewModelScope)
     }

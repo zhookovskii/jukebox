@@ -11,4 +11,13 @@ sealed class SongListInternalAction {
     data class BuildState(
         val data: List<Song>
     ) : SongListInternalAction()
+
+    data class UpdateTrackState(
+        val trackId: Long,
+        val newState: Song.PlaybackState,
+    ) : SongListInternalAction()
+
+    data class UpdateCurrentTrackProgress(
+        val progress: Int
+    ) : SongListInternalAction()
 }
