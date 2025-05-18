@@ -34,6 +34,7 @@ Some of the technologies used:
 ## Demonstration
 
 A gif is the best I can embed into Markdown, but there is no sound, so you will have to trust me that the music is indeed playing.
+
 <img src="demo/demo_recording.gif" alt="Screen recording" width="300"/>
 
 <img src="demo/light_theme.jpg" alt="Light theme" width="300"/><img src="demo/dark_theme.jpg" alt="Dark theme" width="300"/>
