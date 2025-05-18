@@ -14,6 +14,7 @@ class PlayerService : MediaLibraryService() {
         super.onCreate()
         player = ExoPlayer.Builder(this).build()
     }
+
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession? {
         return MediaLibrarySession.Builder(
             this,

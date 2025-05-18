@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="h1" format="reference" />
+    <attr name="m1" format="reference" />
+    <attr name="m2" format="reference" />
+    <attr name="s1" format="reference" />
+    <attr name="s2" format="reference" />
+</resources>

@@ -35,7 +35,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
 
@@ -50,12 +49,7 @@ dependencies {
     // Retrofit
     implementation(libs.retrofit)
 
-    // Lifecycle
-    implementation(libs.lifecycle.viewmodel.ktx)
-
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-
     implementation(project(":media-core"))
+    implementation(project(":util"))
+    implementation(project(":design-core"))
 }

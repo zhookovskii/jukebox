@@ -3,37 +3,36 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:theme="@style/Theme.SongList">
+    android:padding="16dp">
 
     <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textStyle="normal"
+        android:textAppearance="?s1"
         android:textColor="?colorPrimaryVariant"
         android:gravity="center"
-        android:text="Не получилось загрузить данные. Попробуйте еще раз"/>
+        android:text="@string/error_message" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/retry_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_gravity="center"
-        android:textSize="14sp"
+        android:textAppearance="?m1"
+        android:textAllCaps="false"
         android:textColor="?colorSecondary"
         android:background="@drawable/button_bg"
-        android:text="Загрузить"/>
+        android:text="@string/retry_button_text" />
 
     <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1" />
 
 </LinearLayout>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="TextAppearance.H1" parent="android:TextAppearance">
+        <item name="android:fontFamily">@font/helvetica_bold</item>
+        <item name="android:textSize">32sp</item>
+    </style>
+
+    <style name="TextAppearance.M1" parent="android:TextAppearance">
+        <item name="android:fontFamily">@font/helvetica_bold</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="TextAppearance.M2" parent="android:TextAppearance">
+        <item name="android:fontFamily">@font/helvetica_bold</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextAppearance.S1" parent="android:TextAppearance">
+        <item name="android:fontFamily">@font/helvetica_regular</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextAppearance.S2" parent="android:TextAppearance">
+        <item name="android:fontFamily">@font/helvetica_regular</item>
+        <item name="android:textSize">11sp</item>
+    </style>
+
+</resources>

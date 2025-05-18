@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="loading_message">Loading songs…</string>
+    <string name="error_message">Failed to load songs.\nPlease try again</string>
+    <string name="retry_button_text">Load</string>
+    <string name="list_header">Your mix</string>
+</resources>

@@ -1,17 +1,14 @@
 package com.zhukovskii.media_core
 
 import android.content.Context
-import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
+import com.zhukovskii.util.Milliseconds
+import com.zhukovskii.util.UriBuilder
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -31,7 +28,7 @@ interface PlayerManager {
 
     fun isPlaying(): Boolean
 
-    fun seekTo(progress: Int)
+    fun seekTo(progress: Milliseconds)
 
     fun release()
 }
@@ -49,6 +46,7 @@ class PlayerManagerImpl @Inject constructor(
             delay(PROGRESS_UPDATE_INTERVAL)
         }
     }
+
     override fun init() {
         if (player == null) {
             player = ExoPlayer.Builder(context).build()
@@ -56,8 +54,9 @@ class PlayerManagerImpl @Inject constructor(
     }
 
     override fun play(trackId: Long) {
-        val url = "http://192.168.1.133:8080/songs/$trackId/play"
-        val mediaItem = MediaItem.fromUri(Uri.parse(url))
+        val mediaItem = MediaItem.fromUri(
+            UriBuilder.buildMediaFileUri(trackId)
+        )
 
         player?.apply {
             setMediaItem(mediaItem)
@@ -80,7 +79,7 @@ class PlayerManagerImpl @Inject constructor(
 
     override fun isPlaying() = player?.isPlaying ?: false
 
-    override fun seekTo(progress: Int) {
+    override fun seekTo(progress: Milliseconds) {
         player?.seekTo(progress.toLong())
     }
 
@@ -90,6 +89,6 @@ class PlayerManagerImpl @Inject constructor(
     }
 
     companion object {
-        private const val PROGRESS_UPDATE_INTERVAL = 500L
+        private const val PROGRESS_UPDATE_INTERVAL = 100L
     }
 }

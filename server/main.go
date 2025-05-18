@@ -7,19 +7,21 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"sync"
+	"github.com/jackc/pgx/v5"
+	"context"
+	"log"
 )
 
 var (
-	nextId = 0
-	songCache = make(map[int]SongRequest)
-	cacheMutex sync.RWMutex
+	db *pgx.Conn
 )
 
 type SongRequest struct {
 	Name string `json:"name"`
 	Artist string `json:"artist"`
 	Duration int `json:"duration"`
+	FileUri string `json:"fileUri"`
+	CoverUri string `json:"coverUri"`
 }
 
 type SongResponse struct {
@@ -38,8 +40,19 @@ func main() {
 	mux.HandleFunc("GET /songs/{id}/play", playSong)
 	mux.HandleFunc("GET /songs/{id}/cover", getCover)
 
+	initDB()
+	defer db.Close(context.Background())
 	fmt.Println("Server listening on port 8080")
 	http.ListenAndServe("0.0.0.0:8080", mux)
+}
+
+func initDB() {
+	var err error
+	db, err = pgx.Connect(context.Background(), "postgres://postgres:penguin@localhost:5432/postgres")
+	if err != nil {
+		log.Fatalf("Unable to connect to database: %v\n", err)
+	}
+	fmt.Println("Connected to database")
 }
 
 func getSong(
@@ -53,23 +66,20 @@ func getSong(
 		return
 	}
 
-	cacheMutex.RLock()
-	songRequest, ok := songCache[id]
-	cacheMutex.RUnlock()
+	var song SongResponse
+	err = db.QueryRow(
+		context.Background(),
+		"SELECT id, name, artist, duration FROM songs WHERE id = $1",
+		id,
+	).Scan(&song.Id, &song.Name, &song.Artist, &song.Duration)
 
-	if !ok {
+	if err != nil {
 		http.Error(w, "Song not found", http.StatusNotFound)
 		return
 	}
 
-	songResponse := SongResponse{
-		Id: id,
-		Name: songRequest.Name,
-		Artist: songRequest.Artist,
-	}
-
 	w.Header().Set("Content-Type", "application/json")
-	jsonResponse, err := json.Marshal(songResponse)
+	jsonResponse, err := json.Marshal(song)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -84,17 +94,20 @@ func getSongs(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
-	cacheMutex.RLock()
-	songs := make([]SongResponse, 0, len(songCache))
-	for id, songReq := range songCache {
-		songs = append(songs, SongResponse{
-			Id:     id,
-			Name:   songReq.Name,
-			Artist: songReq.Artist,
-			Duration: songReq.Duration,
-		})
+	rows, err := db.Query(context.Background(), "SELECT id, name, artist, duration FROM songs")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-	cacheMutex.RUnlock()
+	defer rows.Close()
+
+	var songs []SongResponse
+	for rows.Next() {
+		var song SongResponse
+		if err := rows.Scan(&song.Id, &song.Name, &song.Artist, &song.Duration); err == nil {
+			songs = append(songs, song)
+		}
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	jsonResponse, err := json.Marshal(songs)
@@ -130,10 +143,30 @@ func createSong(
 		return
 	}
 
-	cacheMutex.Lock()
-	songCache[nextId] = song
-	nextId++
-	cacheMutex.Unlock()
+	if song.FileUri == "" {
+		http.Error(w, "\"fileUri\" must be specified", http.StatusBadRequest)
+		return
+	}
+
+	if song.CoverUri == "" {
+		http.Error(w, "\"coverUri\" must be specified", http.StatusBadRequest)
+		return
+	}
+
+	_, err = db.Exec(
+		context.Background(),
+		"INSERT INTO songs (name, artist, duration, fileUri, coverUri) VALUES ($1, $2, $3, $4, $5)",
+		song.Name,
+		song.Artist,
+		song.Duration,
+		song.FileUri,
+		song.CoverUri,
+	)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	w.WriteHeader(http.StatusNoContent)
 }
@@ -149,13 +182,11 @@ func deleteSong(
 		return
 	}
 
-	cacheMutex.Lock()
-	if _, ok := songCache[id]; !ok {
-		http.Error(w, "Song not found", http.StatusNotFound)
+	_, err = db.Exec(context.Background(), "DELETE FROM songs WHERE id = $1", id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	delete(songCache, id)
-	cacheMutex.Unlock()
 
 	w.WriteHeader(http.StatusNoContent)
 }
@@ -168,7 +199,17 @@ func playSong(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	audioPath := fmt.Sprintf("tracks/%d.mp3", id)
+	var audioPath string
+	err = db.QueryRow(
+		context.Background(),
+		"SELECT fileUri FROM songs WHERE id = $1",
+		id,
+	).Scan(&audioPath)
+
+	if err != nil {
+		http.Error(w, "Song file not found", http.StatusInternalServerError)
+		return
+	}
 
 	http.ServeFile(w, r, audioPath)
 }
@@ -176,11 +217,21 @@ func playSong(w http.ResponseWriter, r *http.Request) {
 func getCover(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		http.Error(w, "Cover not found", http.StatusNotFound)
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	imagePath := fmt.Sprintf("covers/%d.jpg", id)
+	var imagePath string
+	err = db.QueryRow(
+		context.Background(),
+		"SELECT coverUri FROM songs WHERE id = $1",
+		id,
+	).Scan(&imagePath)
+
+	if err != nil {
+		http.Error(w, "Song cover not found", http.StatusInternalServerError)
+		return
+	}
 
 	file, err := os.Open(imagePath)
 	if err != nil {

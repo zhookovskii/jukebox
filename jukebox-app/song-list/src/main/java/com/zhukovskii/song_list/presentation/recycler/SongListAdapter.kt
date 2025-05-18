@@ -7,11 +7,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.zhukovskii.song_list.R
 import com.zhukovskii.song_list.domain.Song
+import com.zhukovskii.util.Milliseconds
 
 class SongListAdapter(
     private val onLoadCover: (trackId: Long, imageView: ImageView) -> Unit,
     private val onClick: (Song) -> Unit,
-    private val onProgressChanged: (Int) -> Unit,
+    private val onProgressChanged: (Milliseconds) -> Unit,
     private val onProgressUpdateCallbackSet: ((Int) -> Unit) -> Unit,
 ) : ListAdapter<Song, SongItemViewHolder>(SongItemDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongItemViewHolder {

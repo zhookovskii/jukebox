@@ -9,7 +9,6 @@ import com.zhukovskii.song_list.presentation.mvi.entity.SongListState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
-import retrofit2.HttpException
 import javax.inject.Inject
 
 class SongListActor @Inject constructor(
@@ -36,11 +35,8 @@ class SongListActor @Inject constructor(
             is SongListIntent.TrackClicked -> {
                 when (previousState) {
                     is SongListState.Content -> {
-                        val activeTrack = previousState.data.find { song ->
-                            song.playbackState !is Song.PlaybackState.Idle
-                        }
-
-                        handleTrackClicked(intent, activeTrack)
+                        val currentTrack = previousState.currentTrack
+                        handleTrackClicked(intent, currentTrack)
                     }
 
                     else -> {}
@@ -55,62 +51,44 @@ class SongListActor @Inject constructor(
 
     private suspend fun FlowCollector<SongListInternalAction>.handleTrackClicked(
         intent: SongListIntent.TrackClicked,
-        activeTrack: Song?
+        currentTrack: Song?
     ) {
-        when (val playbackState = activeTrack?.playbackState) {
-            null -> {
-                playerManager.play(intent.trackId)
-                emit(
-                    SongListInternalAction.UpdateTrackState(
-                        trackId = intent.trackId,
-                        newState = Song.PlaybackState.Playing(progress = 0)
-                    )
-                )
-            }
-
-            is Song.PlaybackState.Playing -> {
-                if (intent.trackId == activeTrack.id) {
+        if (currentTrack?.id == intent.trackId) {
+            when (currentTrack.playbackState) {
+                Song.PlaybackState.PLAYING -> {
                     playerManager.pause()
+
                     emit(
                         SongListInternalAction.UpdateTrackState(
                             trackId = intent.trackId,
-                            newState = Song.PlaybackState.Paused(progress = playbackState.progress)
-                        )
-                    )
-                } else {
-                    playerManager.stop()
-                    playerManager.play(intent.trackId)
-                    emit(
-                        SongListInternalAction.UpdateTrackState(
-                            trackId = intent.trackId,
-                            newState = Song.PlaybackState.Playing(progress = playbackState.progress)
+                            newState = Song.PlaybackState.PAUSED
                         )
                     )
                 }
-            }
 
-            is Song.PlaybackState.Paused -> {
-                if (intent.trackId == activeTrack.id) {
+                Song.PlaybackState.PAUSED -> {
                     playerManager.resume()
+
                     emit(
                         SongListInternalAction.UpdateTrackState(
                             trackId = intent.trackId,
-                            newState = Song.PlaybackState.Playing(progress = playbackState.progress)
-                        )
-                    )
-                } else {
-                    playerManager.stop()
-                    playerManager.play(intent.trackId)
-                    emit(
-                        SongListInternalAction.UpdateTrackState(
-                            trackId = intent.trackId,
-                            newState = Song.PlaybackState.Playing(progress = 0)
+                            newState = Song.PlaybackState.PLAYING
                         )
                     )
                 }
-            }
 
-            else -> {}
+                else -> {}
+            }
+        } else {
+            if (currentTrack != null) playerManager.stop()
+            playerManager.play(intent.trackId)
+
+            emit(
+                SongListInternalAction.UpdateTrackState(
+                    trackId = intent.trackId,
+                    newState = Song.PlaybackState.PLAYING
+                )
+            )
         }
     }
 }

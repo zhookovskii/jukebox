@@ -4,17 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    <include
+        android:id="@+id/content_layout"
+        layout="@layout/song_list_content" />
 
     <include
         android:id="@+id/loading_layout"
-        layout="@layout/song_list_loading"/>
+        layout="@layout/song_list_loading" />
 
     <include
         android:id="@+id/error_layout"
-        layout="@layout/song_list_error"/>
+        layout="@layout/song_list_error" />
 
 </LinearLayout>

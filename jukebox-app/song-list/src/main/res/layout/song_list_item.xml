@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
-    android:theme="@style/Theme.SongList">
+    android:padding="16dp">
 
     <ImageView
         android:id="@+id/icon"
@@ -16,19 +15,19 @@
         android:scaleType="centerInside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <ImageView
         android:id="@+id/cover"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        app:layout_constraintWidth_percent="0.125"
+        app:layout_constraintWidth_percent="0.150"
         app:layout_constraintDimensionRatio="1:1"
         android:importantForAccessibility="no"
         android:scaleType="centerInside"
         app:layout_constraintStart_toEndOf="@id/icon"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/title"
@@ -36,12 +35,12 @@
         app:layout_constraintWidth_percent="0.6"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:textSize="14sp"
-        android:textStyle="bold"
+        android:textAppearance="?m2"
         android:textColor="?colorPrimary"
         android:ellipsize="end"
         app:layout_constraintStart_toEndOf="@id/cover"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/artist" />
 
     <TextView
         android:id="@+id/artist"
@@ -49,27 +48,25 @@
         app:layout_constraintWidth_percent="0.5"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:textSize="11sp"
-        android:textStyle="normal"
+        android:textAppearance="?s2"
         android:textColor="?colorPrimaryVariant"
         android:ellipsize="end"
         app:layout_constraintStart_toEndOf="@id/cover"
-        app:layout_constraintTop_toBottomOf="@id/title" />
+        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintBottom_toTopOf="@id/seekbar" />
 
     <TextView
         android:id="@+id/duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:textSize="11sp"
-        android:textStyle="normal"
+        android:textAppearance="?s2"
         android:textColor="?colorPrimaryVariant"
         android:ellipsize="end"
         app:layout_constraintStart_toEndOf="@id/title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/seekbar"/>
+        app:layout_constraintBottom_toBottomOf="@id/seekbar" />
 
     <SeekBar
         android:id="@+id/seekbar"
@@ -77,6 +74,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         app:layout_constraintTop_toBottomOf="@id/cover"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

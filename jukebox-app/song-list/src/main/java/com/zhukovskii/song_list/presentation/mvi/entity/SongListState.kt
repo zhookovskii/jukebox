@@ -7,7 +7,7 @@ sealed class SongListState {
     data class Content(val data: List<Song>) : SongListState() {
 
         val currentTrack: Song?
-            get() = data.find { it.playbackState != Song.PlaybackState.Idle }
+            get() = data.find { it.playbackState != Song.PlaybackState.IDLE }
     }
 
     data class Error(val message: String) : SongListState()

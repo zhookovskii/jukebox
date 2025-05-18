@@ -20,17 +20,6 @@ class SongListReducer @Inject constructor() {
                 newState = internalAction.newState,
                 previousState = previousState,
             )
-            is SongListInternalAction.UpdateCurrentTrackProgress -> when (previousState) {
-                is SongListState.Content -> previousState.currentTrack?.let { currentTrack ->
-                    handlePlaybackStateUpdate(
-                        trackId = currentTrack.id,
-                        newState = currentTrack.playbackState.copyWithProgress(internalAction.progress),
-                        previousState = previousState,
-                    )
-                } ?: previousState
-
-                else -> previousState
-            }
         }
     }
 
@@ -45,7 +34,7 @@ class SongListReducer @Inject constructor() {
                     if (song.id == trackId)
                         song.copy(playbackState = newState)
                     else
-                        song.copy(playbackState = Song.PlaybackState.Idle)
+                        song.copy(playbackState = Song.PlaybackState.IDLE)
                 }
             )
 

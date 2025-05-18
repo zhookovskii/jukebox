@@ -1,0 +1,6 @@
+<resources>
+    <color name="secondary">#000000</color>
+    <color name="primary_variant_dark">#434343</color>
+    <color name="primary_variant">#D1D1D1</color>
+    <color name="primary">#FFFFFF</color>
+</resources>

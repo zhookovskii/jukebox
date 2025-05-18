@@ -1,16 +1,21 @@
 package com.zhukovskii.song_list.presentation.recycler
 
-import android.content.Context
 import android.view.View
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.zhukovskii.song_list.R
 import com.zhukovskii.song_list.domain.Song
+import com.zhukovskii.util.Milliseconds
+import com.zhukovskii.util.setBackgroundColorById
+import com.zhukovskii.util.setTextColorById
+import com.zhukovskii.util.setTintedDrawableById
+import com.zhukovskii.util.toMilliseconds
+import com.zhukovskii.util.toSeconds
+import com.zhukovskii.util.toSongDurationText
+import com.zhukovskii.design_core.R as design_R
 
 class SongItemViewHolder(
     private val view: View,
@@ -29,7 +34,7 @@ class SongItemViewHolder(
         song: Song,
         onLoadCover: (trackId: Long, imageView: ImageView) -> Unit,
         onClick: (Song) -> Unit,
-        onProgressChanged: (Int) -> Unit
+        onProgressChanged: (Milliseconds) -> Unit
     ) {
         titleView.text = song.name
         artistView.text = song.artist
@@ -40,36 +45,54 @@ class SongItemViewHolder(
         view.setOnClickListener { onClick(song) }
 
         when (val playbackState = song.playbackState) {
-            Song.PlaybackState.Idle -> {
-                titleView.setTextColorById(R.color.primary, context)
-                artistView.setTextColorById(R.color.primary_variant, context)
-                durationView.setTextColorById(R.color.primary_variant, context)
-                view.setBackgroundColorById(R.color.secondary, context)
+            Song.PlaybackState.IDLE -> {
+                titleView.setTextColorById(design_R.color.primary, context)
+                artistView.setTextColorById(design_R.color.primary_variant, context)
+                durationView.setTextColorById(design_R.color.primary_variant, context)
+                view.setBackgroundColorById(design_R.color.secondary, context)
                 seekBar.visibility = View.GONE
-                iconView.setTintedDrawableById(R.drawable.play_icon, R.color.primary, context)
+                iconView.setTintedDrawableById(
+                    R.drawable.play_icon,
+                    design_R.color.primary,
+                    context
+                )
             }
 
             else -> {
-                titleView.setTextColorById(R.color.secondary, context)
-                artistView.setTextColorById(R.color.primary_variant_dark, context)
-                durationView.setTextColorById(R.color.primary_variant_dark, context)
-                view.setBackgroundColorById(R.color.primary, context)
+                titleView.setTextColorById(design_R.color.secondary, context)
+                artistView.setTextColorById(design_R.color.primary_variant_dark, context)
+                durationView.setTextColorById(design_R.color.primary_variant_dark, context)
+                view.setBackgroundColorById(design_R.color.primary, context)
                 seekBar.visibility = View.VISIBLE
 
-                seekBar.max = song.duration
+                seekBar.max = song.duration.toMilliseconds()
                 when (playbackState) {
-                    is Song.PlaybackState.Playing -> {
-                        iconView.setTintedDrawableById(R.drawable.pause_icon, R.color.secondary, context)
+                    Song.PlaybackState.PLAYING -> {
+                        iconView.setTintedDrawableById(
+                            R.drawable.pause_icon,
+                            design_R.color.secondary,
+                            context
+                        )
                     }
-                    is Song.PlaybackState.Paused -> {
-                        iconView.setTintedDrawableById(R.drawable.play_icon, R.color.secondary, context)
+
+                    Song.PlaybackState.PAUSED -> {
+                        iconView.setTintedDrawableById(
+                            R.drawable.play_icon,
+                            design_R.color.secondary,
+                            context
+                        )
                     }
+
                     else -> {}
                 }
 
                 seekBar.setOnSeekBarChangeListener(
                     object : OnSeekBarChangeListener {
-                        override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                        override fun onProgressChanged(
+                            seekBar: SeekBar,
+                            progress: Milliseconds,
+                            fromUser: Boolean
+                        ) {
                             if (fromUser) {
                                 onProgressChanged(progress)
                             }
@@ -85,41 +108,10 @@ class SongItemViewHolder(
         }
     }
 
-    fun onProgressUpdate(song: Song, progress: Int) {
-        if (song.playbackState !is Song.PlaybackState.Idle) {
+    fun onProgressUpdate(song: Song, progress: Milliseconds) {
+        if (song.playbackState != Song.PlaybackState.IDLE) {
             seekBar.progress = progress
-            durationView.text = progress.toSongDurationText()
-        }
-    }
-
-    private fun Int.toSongDurationText(): String {
-        val durationSeconds = this / 1000
-        val minutes = "${durationSeconds / 60}".justifyLeft(2, "0")
-        val seconds = "${durationSeconds % 60}".justifyLeft(2, "0")
-        return "$minutes:$seconds"
-    }
-
-    private fun String.justifyLeft(requiredLength: Int, fillSymbol: CharSequence): String {
-        if (length >= requiredLength) return this
-
-        return fillSymbol.repeat(requiredLength - length) + this
-    }
-
-    private fun TextView.setTextColorById(resourceId: Int, context: Context) {
-        setTextColor(ContextCompat.getColor(context, resourceId))
-    }
-
-    private fun View.setBackgroundColorById(resourceId: Int, context: Context) {
-        setBackgroundColor(ContextCompat.getColor(context, resourceId))
-    }
-
-    private fun ImageView.setTintedDrawableById(drawableResId: Int, colorResId: Int, context: Context) {
-        ContextCompat.getDrawable(context, drawableResId)?.let { drawable ->
-            val wrappedDrawable = DrawableCompat.wrap(drawable)
-            val tint = ContextCompat.getColor(context, colorResId)
-
-            DrawableCompat.setTint(wrappedDrawable, tint)
-            setImageDrawable(wrappedDrawable)
+            durationView.text = progress.toSeconds().toSongDurationText()
         }
     }
 }

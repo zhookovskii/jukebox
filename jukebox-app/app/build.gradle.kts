@@ -1,4 +1,5 @@
 plugins {
+    alias(libs.plugins.dependencyAnalysis)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.ksp)
@@ -38,9 +39,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
 
     // Hilt
     implementation(libs.hilt.android)
@@ -53,7 +52,8 @@ dependencies {
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(project(":song-list"))
+    implementation(project(":util"))
+    implementation(project(":design-core"))
 }

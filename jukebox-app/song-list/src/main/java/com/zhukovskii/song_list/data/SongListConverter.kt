@@ -11,8 +11,8 @@ class SongListConverter @Inject constructor() {
                 id = it.id,
                 name = it.name,
                 artist = it.artist,
-                duration = it.duration * 1000,
-                playbackState = Song.PlaybackState.Idle,
+                duration = it.duration,
+                playbackState = Song.PlaybackState.IDLE,
             )
         }
     }

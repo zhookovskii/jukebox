@@ -16,8 +16,4 @@ sealed class SongListInternalAction {
         val trackId: Long,
         val newState: Song.PlaybackState,
     ) : SongListInternalAction()
-
-    data class UpdateCurrentTrackProgress(
-        val progress: Int
-    ) : SongListInternalAction()
 }

@@ -1,0 +1,16 @@
+<resources>
+
+    <style name="Theme.Jukebox" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_variant</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="android:windowBackground">@color/secondary</item>
+        <item name="android:statusBarColor">@color/primary</item>
+
+        <item name="h1">@style/TextAppearance.H1</item>
+        <item name="m1">@style/TextAppearance.M1</item>
+        <item name="m2">@style/TextAppearance.M2</item>
+        <item name="s1">@style/TextAppearance.S1</item>
+        <item name="s2">@style/TextAppearance.S2</item>
+    </style>
+</resources>

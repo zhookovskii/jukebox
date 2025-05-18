@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="loading_message">Загружаем треки…</string>
+    <string name="error_message">Не получилось загрузить треки.\nПопробуйте еще раз</string>
+    <string name="retry_button_text">Загрузить</string>
+    <string name="list_header">Ваш микс</string>
+</resources>
