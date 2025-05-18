@@ -15,11 +15,11 @@ The server is run locally and uses a PostgreSQL database to store data. The medi
 ### Android application
 
 The application implements a multi-module architecture:
-* __:app__ - the application module containing MainActivity
-* __:song-list__ - contains the implementation of the main screen providing the list of songs
-* __:media-core__ - encapsulates interaction with ExoPlayer for foreground playback
-* __:design-core__ - defines the theme of the application
-* __:util__ - contains utility functions and constants
+* `:app` - the application module containing MainActivity
+* `:song-list` - contains the implementation of the main screen providing the list of songs
+* `:media-core` - encapsulates interaction with ExoPlayer for foreground playback
+* `:design-core` - defines the theme of the application
+* `:util` - contains utility functions and constants
 
 Some of the technologies used:
 * __Dagger 2__ for dependency injection
